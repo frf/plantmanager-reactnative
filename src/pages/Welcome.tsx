@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, 
     Text, 
     Image, 
@@ -8,6 +8,7 @@ import { View,
     SafeAreaView
 } from 'react-native'
 import {Feather} from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
@@ -17,8 +18,23 @@ import { useNavigation } from '@react-navigation/core';
 export function Welcome() {
     const navigation = useNavigation();
 
+    const [userName, setUserName] = useState<string>();
+
+    useEffect(() => {
+        async function loadStorageUserName() {
+            const user = await AsyncStorage.getItem('@plangmanager:user');
+            setUserName(user || '');
+        }
+
+        loadStorageUserName();
+    },[userName])
+
     function handleStart() {
-        navigation.navigate('UserIdentification')
+        if (userName != '') {
+            navigation.navigate('PlantSelect')
+        } else {
+            navigation.navigate('UserIdentification')
+        }
     }
 
     return (
@@ -61,7 +77,6 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 28,
-        fontWeight: 'bold',
         textAlign: 'center',
         color: colors.heading,
         marginTop: 38,

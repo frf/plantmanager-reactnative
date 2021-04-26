@@ -1,21 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacityProps, Image } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper'
-import userImg from '../assets/fabio.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import userImg from '../assets/fabio.png';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 
-interface HaderProps extends TouchableOpacityProps{
-    name: string
-}
+export function Header() {
+    const [userName, setUserName] = useState<string>();
 
-export function Header({name, ...rest} : HaderProps) {
+    useEffect(() => {
+        async function loadStorageUserName() {
+            const user = await AsyncStorage.getItem('@plangmanager:user');
+            setUserName(user || '');
+        }
+
+        loadStorageUserName();
+    },[userName])
+
     return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.greeting}>Ola,</Text>
-                <Text style={styles.userName}>{name}</Text>
+                <Text style={styles.userName}>{userName}</Text>
             </View>
             <Image style={styles.image} source={userImg} />
         </View>
